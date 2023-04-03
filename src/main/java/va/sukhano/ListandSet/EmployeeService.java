@@ -7,49 +7,47 @@ import va.sukhano.ListandSet.exception.EmployeeAlreadyAddedException;
 import va.sukhano.ListandSet.exception.EmployeeNotFoundException;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 @Service
 public class EmployeeService {
-    private List<Employee> employeeBook = new ArrayList<>();
-    //Employee[] employeeBook = new Employee[10];
-
+    private final List<Employee> employeeBook = new ArrayList<>();
 
     public Employee add(String firstName, String lastName) {
         Employee person = new Employee(firstName, lastName);
-        for (Employee employee : employeeBook) {
-            if (employee.equals(person)) {
-                throw new EmployeeAlreadyAddedException("Добавляемый сотрудник уже есть в списке");
-            }
-            employeeBook.add(person);
+        if (employeeBook.contains(person)) {
+            throw new EmployeeAlreadyAddedException("Добавляемый сотрудник уже есть в списке");
         }
+        employeeBook.add(person);
         return person;
     }
 
     public Employee find(String firstName, String lastName) {
         Employee person = new Employee(firstName, lastName);
-        for (Employee employee : employeeBook) {
-            if (employee.equals(person)) {
-                return person;
-            }
+        if (employeeBook.contains(person)) {
+            return person;
         }
-        throw new EmployeeNotFoundException ("Сотрудник не найден.");
+        throw new EmployeeNotFoundException("Сотрудник не найден");
     }
 
 
     public Employee delete(String firstName, String lastName) {
         Employee person = new Employee(firstName, lastName);
-        for (int i = 0; i < employeeBook.size(); i++) {
-            if (employeeBook.get(i).equals(person)) {
-                employeeBook.remove(i);
-                return person;
-            }
+        if (employeeBook.contains(person)) {
+            employeeBook.remove(person);
+            return person;
         }
-        throw new EmployeeNotFoundException("Сотрудник не найден.");
+        throw new EmployeeNotFoundException("Сотрудник не найден");
     }
 
+
     public List<Employee> showAll() {
-        return employeeBook;
+        return Collections.unmodifiableList(employeeBook); // Если мы будем возвращать ссылку на оригинальный объект,
+                                                           //внутри которого хранится список сотрудников, это даст возможность
+                                                           //другому разработчику использовать этот объект не так, как задумано
+                                                           // для этого надо запретить доступ, т.е. создать копию листа
     }
 
 
